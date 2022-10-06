@@ -64,35 +64,32 @@ export class AppComponent {
 
   /**
    * This solution is more efficient in terms of time complexity than the previous one as it traverses both arrays once.
-   * We could say this would be roughly a O(2n) solution
+   * We could say this would be roughly a O(n + k) solution where n is the size of the items array and k is the size of the orders array.
+   * This algorythm uses more space as it maintains a map of items.
    */
   getFilteredResultEfficiently(items: string[], order: string[]): string[] {
-    const result: string[] = [];
+    let result: string[] = [];
 
-    const colorCounts: { [name: string]: number } = {};
+    const colorBucket: { [name: string]: string[] } = {};
 
     // iterate over the items array and form a bucket. This runs n times (where n is the length of items array)
     items.forEach((color) => {
-      if (colorCounts[color]) {
-        // increment count
-        colorCounts[color] += 1;
+      if (colorBucket[color]) {
+        // add to the array
+        colorBucket[color].push(color);
       } else {
-        // initialize
-        colorCounts[color] = 1;
+        // initialize the array
+        colorBucket[color] = [color];
       }
     });
 
-    console.log(colorCounts);
+    console.log(colorBucket);
 
     // now iterate over the order array and lookup in the bucket. This runs k times (where k is the length of order array)
     order.forEach((orderColor) => {
 
-      if (colorCounts[orderColor]) {
-        // this will run variable times based on the count/duplicacy of each color in the items array
-        // we can get rid of this loop if we choose to store the array of colors instead of the count
-        for (let i = 1; i <= colorCounts[orderColor]; i++) {
-          result.push(orderColor);
-        }
+      if (colorBucket[orderColor]) {
+        result = result.concat(colorBucket[orderColor]);
       }
 
     })
